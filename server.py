@@ -169,18 +169,30 @@ def tg_send(url: str):
     if not chat:
         return {"ok": False, "err": "напиши боту сообщение и повтори"}
     with db() as c:
-        r = c.execute("SELECT title, time FROM items WHERE url=?", (norm(url),)).fetchone()
+        r = c.execute(
+            "SELECT title, time, poster, ep_label FROM items WHERE url=?", (norm(url),)
+        ).fetchone()
     if not r:
         return {"ok": False, "err": "не найдено"}
     title = r["title"] or url
     t = int(r["time"] or 0)
     stamp = (f"{t//3600}ч {(t%3600)//60} мин" if t >= 3600 else f"{t//60} мин")
-    text = f"▶ {title}\nПродолжить с {stamp}\n{norm(url)}"
+    caption = f"🎬 {title}\n"
+    if r["ep_label"]:
+        caption += f"📺 {r['ep_label']} серия\n"
+    caption += f"⏱ Продолжить с {stamp}\n{norm(url)}"
     try:
-        _tg_api("sendMessage", {"chat_id": chat, "text": text})
+        if r["poster"]:
+            _tg_api("sendPhoto", {"chat_id": chat, "photo": r["poster"], "caption": caption})
+        else:
+            _tg_api("sendMessage", {"chat_id": chat, "text": caption})
         return {"ok": True}
-    except Exception as e:
-        return {"ok": False, "err": str(e)}
+    except Exception:
+        try:  # постер не принялся — шлём текстом
+            _tg_api("sendMessage", {"chat_id": chat, "text": caption})
+            return {"ok": True}
+        except Exception as e:
+            return {"ok": False, "err": str(e)}
 
 
 ICON_SVG = (
@@ -444,8 +456,7 @@ const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g
 function devHTML(dev){
   if(!dev) return '';
   const phone = /телефон|📱/i.test(dev);
-  const label = dev.replace(/[💻📱]/g,'').trim();
-  return `<span class="dev">${phone?IC.phone:IC.laptop}${esc(label)}</span>`;
+  return `<span class="dev" title="${phone?'Телефон':'ПК'}">${phone?IC.phone:IC.laptop}</span>`;
 }
 
 function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600); }
