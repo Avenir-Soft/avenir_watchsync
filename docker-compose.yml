@@ -1,0 +1,11 @@
+services:
+  watch-sync:
+    build: .
+    container_name: watch-sync
+    ports:
+      - "8765:8765"
+    volumes:
+      - ./data:/data     # тут лежит watch.db — переживает пересборку
+    environment:
+      - TG_TOKEN=${TG_TOKEN:-}   # значение берётся из .env (не коммитится)
+    restart: unless-stopped

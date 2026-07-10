@@ -1,0 +1,80 @@
+{
+  "manifest_version": 3,
+  "name": "Avenir WatchSync",
+  "version": "2.4",
+  "description": "Синхронизация позиции видео на телефоне (Kiwi/Mises) с домашним сервером.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    },
+    "default_title": "Avenir WatchSync"
+  },
+  "permissions": [
+    "tabs",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "all_frames": true,
+      "js": [
+        "mainworld.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "exclude_matches": [
+        "*://*.youtube.com/*",
+        "*://youtu.be/*",
+        "*://*.youtube-nocookie.com/*",
+        "*://*.instagram.com/*"
+      ]
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "all_frames": true,
+      "js": [
+        "inject-fallback.js"
+      ],
+      "run_at": "document_start",
+      "exclude_matches": [
+        "*://*.youtube.com/*",
+        "*://youtu.be/*",
+        "*://*.youtube-nocookie.com/*",
+        "*://*.instagram.com/*"
+      ]
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "all_frames": true,
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "exclude_matches": [
+        "*://*.youtube.com/*",
+        "*://youtu.be/*",
+        "*://*.youtube-nocookie.com/*",
+        "*://*.instagram.com/*"
+      ]
+    }
+  ]
+}

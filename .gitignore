@@ -1,0 +1,18 @@
+# секреты
+.env
+
+# python
+.venv/
+__pycache__/
+*.pyc
+
+# рантайм-данные (БД, тома)
+data/
+*.db
+
+# логи
+*.log
+
+# сборочные артефакты
+extension-*/web-ext-artifacts/
+extension-*/.amo-upload-uuid

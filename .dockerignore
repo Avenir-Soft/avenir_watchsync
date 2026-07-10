@@ -1,0 +1,9 @@
+.venv
+data
+extension
+extension-phone
+__pycache__
+*.md
+*.bat
+server.log
+watch.db
